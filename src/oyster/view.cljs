@@ -2,7 +2,7 @@
   (:use-macros [crate.def-macros :only [defpartial]])
   (:require [crate.core :as crate]))
 
-(defpartial main-body []
+(defpartial oyster-body []
   [:body
    [:div.resources
     [:p

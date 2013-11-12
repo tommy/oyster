@@ -12,9 +12,8 @@
 
 (. js/console (log "Oyster Cloyster."))
 
-(. js/console (log (oyster.view/main-body)))
 ;; render page
-(set-html! (. js/document -body) (. (oyster.view/main-body) -outerHTML))
+(set-html! (. js/document -body) (. (oyster.view/oyster-body) -outerHTML))
 
 ;; view binding
 (defn update-html!
