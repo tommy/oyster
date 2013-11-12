@@ -5,7 +5,7 @@
             [goog.string :as gstring]
             [oyster.dom :as dom :refer [length item as-seq
                                           set-html! set-style! by-id
-                                          by-tag html]]
+                                          by-tag html update-html! update-height!]]
             [oyster.view]
             [oyster.async :as async :refer [listen every process-channel bind]])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
@@ -14,15 +14,6 @@
 
 ;; render page
 (set-html! (. js/document -body) (. (oyster.view/oyster-body) -outerHTML))
-
-;; view binding
-(defn update-html!
-  [id _ _ new-value]
-  (set-html! (by-id id) new-value))
-
-(defn update-height!
-  [id _ _ new-value]
-  (set-style! (by-id id) "height" (goog.string/format "%d%%" new-value)))
 
 ;; game state
 (def oysters (atom 0))

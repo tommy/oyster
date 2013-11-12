@@ -3,6 +3,7 @@
 
 ;; println calls should log to the JS console.
 (set! *print-fn* (fn [x] (.log js/console x)))
+
   
 ;; DOM utilities
   
@@ -27,3 +28,18 @@
     (.getElementsByTagName js/document (name tag))))
 
 (defn html [dom] (. dom -innerHTML))
+
+
+;; DOM binding utilities
+
+(defn update-html!
+  "Used as an atom watch function.
+  Updates the inner HTML of an element to the new-value of the atom."
+  [id _ _ new-value]
+  (set-html! (by-id id) new-value))
+
+(defn update-height!
+  "Used as an atom watch function.
+  Updates the (percentage) height of an element to the new-value of the atom."
+  [id _ _ new-value]
+  (set-style! (by-id id) "height" (goog.string/format "%d%%" new-value)))
