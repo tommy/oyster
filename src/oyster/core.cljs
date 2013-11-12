@@ -16,4 +16,9 @@
 (defn seed [] 1234)
 
 ;; render page
-(set-html! (. js/document -body) (. (oyster.view/draw-map (m/empty-map (seed))) -outerHTML))
+(defn game []
+  (let [m (m/empty-map (seed))]
+    (set-html! (by-id :content) (. (oyster.view/draw-map m) -outerHTML))))
+
+;; begin the game when everything is loaded
+(set! (. js/window -onload) game)
