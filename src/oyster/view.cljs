@@ -13,7 +13,7 @@
     [:div#hunger.hunger-bar]]])
 
 (defpartial map-row [xs]
-  [:div.map-row xs])
+  [:div.map-row (seq xs)])
 
 (defpartial draw-map [xss]
   [:div#map
