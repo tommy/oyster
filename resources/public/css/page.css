@@ -1,5 +1,18 @@
 #map {
   font-family: monospace;
+  font-size: large;
+}
+
+#map .grass {
+  color: green;
+}
+
+#map .water {
+  color: blue;
+}
+
+#map .beach {
+  color: orange;
 }
 
 body {

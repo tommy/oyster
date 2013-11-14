@@ -12,8 +12,16 @@
    [:div.hunger-container
     [:div#hunger.hunger-bar]]])
 
+(defpartial map-cell [x]
+  (case x
+    \~ [:span.water x]
+    \, [:span.grass x]
+    \. [:span.beach x]
+    [:span x]))
+
 (defpartial map-row [xs]
-  [:div.map-row (seq xs)])
+  [:div.map-row
+   (map map-cell xs)])
 
 (defpartial draw-map [xss]
   [:div#map
