@@ -46,7 +46,8 @@
   []
   (->> (listen js/document :keypress)
        (map< #(.-charCode %))
-       (map< #(.fromCharCode js/String %))))
+       (map< #(.fromCharCode js/String %))
+       (map< keyword)))
 
 (defn tile-commands
   "Combine a channel of selected-tiles and a channel of keyboard commands
