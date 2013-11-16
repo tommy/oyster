@@ -15,12 +15,28 @@
 
 (defn seed [] 1234)
 
+(defn hovers
+  "A channel of tile <spans> which have been hovered over"
+  []
+  (->> (listen (by-id :map) :mouseover)
+       (map< #(.-target %))))
+
+(defn show-selected
+  [hover-chan]
+  "Watch a hover channel, keeping the .selected class on the current hovered element"
+  (go
+   (loop [last nil]
+     (let [next (<! hover-chan)]
+       (dom/add-class next "selected")
+       (if last
+         (dom/remove-class last "selected"))
+       (recur next)))))
+
 (defn selected-tiles
   "A channel populated with selected map tiles.
   (Tiles are selected by hovering.)"
-  []
-  (->> (listen (by-id :map) :mouseover)
-       (map< #(.-target %))
+  [hover-chan]
+  (->> hover-chan
        (remove< #(nil? (.-tile (.-attributes %))))
        (map< #(.-value (.-tile (.-attributes %))))))
 
@@ -28,7 +44,9 @@
 (defn game []
   (let [m (m/empty-map (seed))]
     (set-html! (by-id :content) (.-outerHTML (oyster.view/main-game m)))
-    (let [tiles (selected-tiles)]
+    (let [hover-chan (hovers)
+          tiles (selected-tiles hover-chan)]
+      (show-selected hover-chan)
       (process-channel print tiles))))
 
 ;; begin the game when everything is loaded

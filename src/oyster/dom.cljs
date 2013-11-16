@@ -1,5 +1,6 @@
 (ns oyster.dom
-  (:require [goog.style]))
+  (:require [goog.style]
+            [goog.dom.classes]))
 
 ;; println calls should log to the JS console.
 (set! *print-fn* (fn [x] (.log js/console x)))
@@ -32,6 +33,11 @@
     (.getElementsByClassName js/document (name class))))
 
 (defn html [dom] (. dom -innerHTML))
+
+(defn add-class [el class] (goog.dom.classes/add el class))
+
+(defn remove-class [el class] (goog.dom.classes/remove el class))
+  
 
 
 ;; DOM binding utilities

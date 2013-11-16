@@ -1,5 +1,6 @@
 #map {
   font-family: monospace;
+  cursor: none;
 }
 
 #map .grass {
@@ -12,6 +13,11 @@
 
 #map .beach {
   color: orange;
+}
+
+#map .selected {
+  background: gray;
+  color: white;
 }
 
 body {
