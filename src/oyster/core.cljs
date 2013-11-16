@@ -48,17 +48,29 @@
        (map< #(.-charCode %))
        (map< #(.fromCharCode js/String %))))
 
+(defn tile-commands
+  "Combine a channel of selected-tiles and a channel of keyboard commands
+  into a channel of commands at tile locations."
+  [selected-tiles commands]
+  (let [c (chan)]
+    (go (loop [last nil]
+          (let [next (alt!
+                       selected-tiles ([tile] tile)
+                       commands ([cmd] (do (>! c [cmd last]) last)))]
+            (recur next))))
+    c))
+
 (defn game
   "Start the game."
   []
   (let [m (m/empty-map (seed))]
     (set-html! (by-id :content) (.-outerHTML (oyster.view/main-game m)))
     (let [hover-chan (mult (hovers))
-          tiles (selected-tiles (tap-chan hover-chan))
-          cmds (commands)]
+          cmds (tile-commands
+                 (selected-tiles (tap-chan hover-chan))
+                 (commands))]
       (show-selected (tap-chan hover-chan))
-      (process-channel log tiles)
-      (process-channel log cmds))))
+      (process-channel (comp log clj->js) cmds))))
 
 ;; begin the game when everything is loaded
 (set! (.-onload js/window) game)
