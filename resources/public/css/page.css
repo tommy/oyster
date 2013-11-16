@@ -1,6 +1,7 @@
 #map {
   font-family: monospace;
   cursor: none;
+  -webkit-user-select: none;
 }
 
 #map .grass {
