@@ -1,7 +1,7 @@
 (ns oyster.async
   (:use [cljs.core.async :only [put! <!! <! chan timeout]])
   (:require [clojure.browser.event :as event])
-  (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
+  (:require-macros [cljs.core.async.macros :as m :refer [go go-loop alt!]]))
 
 ;; creating channels
   
@@ -19,23 +19,22 @@
   ARE BEING READ FROM THE CHANNEL."
   [interval f]
   (let [rc (chan)]
-    (go
-      (loop []
-        (<! (timeout interval))
-        (>! rc (f))
-        (recur)))
+    (go-loop []
+             (<! (timeout interval))
+             (>! rc (f))
+             (recur))
     rc))
 
 (defn process-channel
   "Process all messages on channel c with function f,
   until the channel is closed."
-  [c f]
-  (go (loop []
-        (if-let [x (<! c)]
-          (do (f x) (recur))))))
+  [f c]
+  (go-loop []
+           (if-let [x (<! c)]
+             (do (f x) (recur)))))
 
 (defn bind
   "Register f as an event handler for events on el."
   [el type f]
   (let [c (listen el type)]
-    (process-channel c f)))
+    (process-channel f c)))

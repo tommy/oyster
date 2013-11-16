@@ -56,8 +56,8 @@
 (defn empty-map
   "Generate random empty map from seed."
   [seed]
-  (let [w 50
-        h 25
+  (let [w 70
+        h 35
         coast (frontier seed w (- h 5))
         cliff (frontier seed w (- h 10))]
     (as-chars {:width w :height h :coastline coast :cliff cliff})))

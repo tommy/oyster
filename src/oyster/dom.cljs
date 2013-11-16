@@ -27,6 +27,10 @@
   (as-seq
     (.getElementsByTagName js/document (name tag))))
 
+(defn by-class [class]
+  (as-seq
+    (.getElementsByClassName js/document (name class))))
+
 (defn html [dom] (. dom -innerHTML))
 
 

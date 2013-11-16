@@ -14,10 +14,10 @@
 
 (defpartial map-cell [x]
   (case x
-    \~ [:span.water x]
-    \, [:span.grass x]
-    \. [:span.beach x]
-    [:span x]))
+    \~ [:span.water {:tile [0,0]} x]
+    \, [:span.grass {:tile [0,0]} x]
+    \. [:span.beach {:tile [0,0]} x]
+    [:span {:tile [0,0]} x]))
 
 (defpartial map-row [xs]
   [:div.map-row
