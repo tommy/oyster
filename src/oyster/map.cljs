@@ -30,8 +30,7 @@
   [seed width init-height]
   (let [n init-height
         jaggedness 2
-        deltas (repeatedly width #(- (rand-int (inc jaggedness)) (/ jaggedness 2)))
-        _ (println deltas)]
+        deltas (repeatedly width #(- (rand-int (inc jaggedness)) (/ jaggedness 2)))]
     (reductions + n deltas)))
 
 (defn draw-frontier

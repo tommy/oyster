@@ -26,3 +26,7 @@
 (defpartial draw-map [xss]
   [:div#map
    (map-indexed map-row xss)])
+
+(defpartial main-game [m]
+  [:p
+   (draw-map m)])
