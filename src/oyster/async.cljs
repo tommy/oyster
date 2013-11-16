@@ -9,8 +9,11 @@
   "Create a channel of events on an element
   of a given type."
   [el type]
-  (let [c (chan)]
-    (event/listen el type #(put! c %))
+  (let [c (chan)
+        f #(put! c %)]
+    (if (= el js/document)
+      (.addEventListener el (name type) f)
+      (event/listen el type f))
     c))
 
 (defn every

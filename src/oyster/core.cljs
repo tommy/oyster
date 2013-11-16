@@ -11,7 +11,8 @@
             [oyster.map :as m])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 
-(. js/console (log "Oyster Cloyster."))
+(defn log [x] (.log js/console x))
+(log "Oyster Cloyster.")
 
 (defn seed [] 1234)
 
@@ -40,14 +41,21 @@
        (remove< #(nil? (.-tile (.-attributes %))))
        (map< #(.-value (.-tile (.-attributes %))))))
 
+(defn commands
+  []
+  (->> (listen js/document :keypress)
+       (map< #(.-keyCode %))))
+
 ;; render page
 (defn game []
   (let [m (m/empty-map (seed))]
     (set-html! (by-id :content) (.-outerHTML (oyster.view/main-game m)))
     (let [hover-chan (hovers)
-          tiles (selected-tiles hover-chan)]
+          tiles (selected-tiles hover-chan)
+          cmds (commands)]
       (show-selected hover-chan)
-      (process-channel print tiles))))
+      (process-channel log tiles)
+      (process-channel log cmds))))
 
 ;; begin the game when everything is loaded
 (set! (.-onload js/window) game)
