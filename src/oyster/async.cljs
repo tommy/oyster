@@ -1,5 +1,5 @@
 (ns oyster.async
-  (:use [cljs.core.async :only [put! <!! <! chan timeout]])
+  (:use [cljs.core.async :only [put! <!! <! chan timeout tap]])
   (:require [clojure.browser.event :as event])
   (:require-macros [cljs.core.async.macros :as m :refer [go go-loop alt!]]))
 
@@ -41,3 +41,12 @@
   [el type f]
   (let [c (listen el type)]
     (process-channel f c)))
+
+(defn tap-chan
+  "Create new channel and register it as a tap on a mult(iple) channel. Return the new tap."
+  ([mult]
+   (tap-chan mult nil))
+  ([mult buf-or-n]
+   (let [c (chan buf-or-n)]
+     (tap mult c)
+     c)))

@@ -1,5 +1,5 @@
 (ns oyster.core
-  (:use [cljs.core.async :only [put! <!! <! chan timeout map< filter< remove<]])
+  (:use [cljs.core.async :only [put! <!! <! chan timeout map< filter< remove< mult]])
   (:require [clojure.browser.event :as event]
             [goog.string.format :as gformat]
             [goog.string :as gstring]
@@ -7,7 +7,7 @@
                                         set-html! set-style! by-id by-class
                                         by-tag html update-html! update-height!]]
             [oyster.view]
-            [oyster.async :as async :refer [listen every process-channel bind]]
+            [oyster.async :as async :refer [listen every process-channel tap-chan]]
             [oyster.map :as m])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 
@@ -50,10 +50,10 @@
 (defn game []
   (let [m (m/empty-map (seed))]
     (set-html! (by-id :content) (.-outerHTML (oyster.view/main-game m)))
-    (let [hover-chan (hovers)
-          tiles (selected-tiles hover-chan)
+    (let [hover-chan (mult (hovers))
+          tiles (selected-tiles (tap-chan hover-chan))
           cmds (commands)]
-      (show-selected hover-chan)
+      (show-selected (tap-chan hover-chan))
       (process-channel log tiles)
       (process-channel log cmds))))
 
