@@ -12,17 +12,17 @@
    [:div.hunger-container
     [:div#hunger.hunger-bar]]])
 
-(defpartial map-cell [x]
+(defpartial map-cell [r c x]
   (case x
-    \~ [:span.water {:tile [0,0]} x]
-    \, [:span.grass {:tile [0,0]} x]
-    \. [:span.beach {:tile [0,0]} x]
-    [:span {:tile [0,0]} x]))
+    \~ [:span.water {:tile [r,c]} x]
+    \, [:span.grass {:tile [r,c]} x]
+    \. [:span.beach {:tile [r,c]} x]
+    [:span {:tile [r,c]} x]))
 
-(defpartial map-row [xs]
+(defpartial map-row [r xs]
   [:div.map-row
-   (map map-cell xs)])
+   (map-indexed (partial map-cell r) xs)])
 
 (defpartial draw-map [xss]
   [:div#map
-   (map map-row xss)])
+   (map-indexed map-row xss)])
