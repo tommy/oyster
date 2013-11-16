@@ -42,12 +42,15 @@
        (map< #(.-value (.-tile (.-attributes %))))))
 
 (defn commands
+  "A channel populated with the player's key presses."
   []
   (->> (listen js/document :keypress)
-       (map< #(.-keyCode %))))
+       (map< #(.-charCode %))
+       (map< #(.fromCharCode js/String %))))
 
-;; render page
-(defn game []
+(defn game
+  "Start the game."
+  []
   (let [m (m/empty-map (seed))]
     (set-html! (by-id :content) (.-outerHTML (oyster.view/main-game m)))
     (let [hover-chan (mult (hovers))
