@@ -1,10 +1,23 @@
 (ns oyster.map
   (:require [oyster.tiles :as t]))
 
-;; TODO: use seeded rng
 (defn rng
-  [seed]
-  nil)
+  "A random number generator seeded with the supplied seed,
+  or autoseeded if none is given."
+  ([]
+   (let [seed (.seedrandom js/Math)]
+     (print "Using seed:" seed)
+     (.-random js/Math)))
+  ([seed]
+   (let [seed (.seedrandom js/Math seed)]
+     (print "Using seed:" seed)
+     (.-random js/Math))))
+
+(defn rand-int
+  "Generate a random integer between 0 (inclusive) and n (exclusive)
+  using the given random number generator."
+  [rng n]
+  (int (* n (rng))))
 
 (defn grid
   "Generate wxh of character c."
@@ -33,10 +46,10 @@
 (defn frontier
   "Generate random frontier. Returns y-distances from top
   of map for the last non-water tile of each cell."
-  [seed width init-height]
+  [rng width init-height]
   (let [n init-height
         jaggedness 2
-        deltas (repeatedly width #(- (rand-int (inc jaggedness)) (/ jaggedness 2)))]
+        deltas (repeatedly width #(- (rand-int rng (inc jaggedness)) (/ jaggedness 2)))]
     (reductions + n deltas)))
 
 (defn draw-frontier
@@ -62,10 +75,11 @@
 (defn empty-map
   "Generate random empty map from seed."
   [seed]
-  (let [w 70
+  (let [rng (if seed (rng seed) (rng))
+        w 70
         h 35
-        coast (frontier seed w (- h 5))
-        cliff (frontier seed w (- h 10))]
+        coast (frontier rng w (- h 5))
+        cliff (frontier rng w (- h 10))]
     (as-chars {:width w :height h :coastline coast :cliff cliff})))
 
 (defn tile-description

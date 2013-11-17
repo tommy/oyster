@@ -13,7 +13,7 @@
 
 (defn log [x] (.log js/console x))
 
-(defn seed [] 1234)
+(defn seed [] (.random js/Math))
 
 (defn hovers
   "A channel of tile <spans> which have been hovered over"
