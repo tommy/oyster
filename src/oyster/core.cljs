@@ -33,13 +33,18 @@
          (dom/remove-class last "selected"))
        (recur next)))))
 
+(defn parse-coords
+  [s]
+  (map js/parseInt (next (re-matches #"\[(\d+) (\d+)\]" s))))
+
 (defn selected-tiles
   "A channel populated with selected map tiles.
   (Tiles are selected by hovering.)"
   [hover-chan]
   (->> hover-chan
        (remove< #(nil? (.-tile (.-attributes %))))
-       (map< #(.-value (.-tile (.-attributes %))))))
+       (map< #(.-value (.-tile (.-attributes %))))
+       (map< parse-coords)))
 
 (defn commands
   "A channel populated with the player's key presses."
