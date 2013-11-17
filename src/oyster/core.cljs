@@ -59,12 +59,11 @@
   [selected-tiles commands]
   (let [c (chan)]
     (go (loop [last nil]
-          (let [next (alt!
-                       selected-tiles ([tile] tile)
-                       commands ([cmd] (do (>! c [cmd last]) last)))]
-            (if next
-              (recur next)
-              (close! c)))))
+          (if-let [next (alt!
+                          selected-tiles ([tile] tile)
+                          commands ([cmd] (do (>! c [cmd last]) last)))]
+            (recur next)
+            (close! c))))
     c))
 
 (defn show-status
