@@ -1,5 +1,5 @@
 (ns oyster.core
-  (:use [cljs.core.async :only [put! <!! <! chan timeout map< filter< remove< mult]])
+  (:use [cljs.core.async :only [put! <!! <! chan timeout map< filter< remove< mult close!]])
   (:require [clojure.browser.event :as event]
             [goog.string.format :as gformat]
             [goog.string :as gstring]
@@ -25,12 +25,12 @@
   [hover-chan]
   "Watch a hover channel, keeping the .selected class on the current hovered element"
   (go
-   (loop [last nil]
-     (let [next (<! hover-chan)]
-       (dom/add-class next "selected")
-       (if last
-         (dom/remove-class last "selected"))
-       (recur next)))))
+    (loop [last nil]
+      (when-let [next (<! hover-chan)]
+        (dom/add-class next "selected")
+        (if last
+          (dom/remove-class last "selected"))
+        (recur next)))))
 
 (defn parse-coords
   [s]
@@ -62,17 +62,17 @@
           (let [next (alt!
                        selected-tiles ([tile] tile)
                        commands ([cmd] (do (>! c [cmd last]) last)))]
-            (recur next))))
+            (if next
+              (recur next)
+              (close! c)))))
     c))
 
 (defn show-status
   "Replace the contents of el with a description of the most recently
   selected tile, read from the tiles channel."
   [m el tiles]
-  (go (loop []
-        (when-let [t (<! tiles)]
-          (set-html! el (m/tile-description m t))
-          (recur)))))
+  (let [f (fn [t] (set-html! el (m/tile-description m t)))]
+    (process-channel f tiles)))
 
 (defn game
   "Start the game."

@@ -33,8 +33,9 @@
   until the channel is closed."
   [f c]
   (go-loop []
-           (if-let [x (<! c)]
-             (do (f x) (recur)))))
+           (when-let [x (<! c)]
+             (f x)
+             (recur))))
 
 (defn bind
   "Register f as an event handler for events on el."
