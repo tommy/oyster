@@ -1,6 +1,7 @@
 (ns oyster.view
-  (:use-macros [crate.def-macros :only [defpartial]])
-  (:require [crate.core :as crate]))
+  (:use-macros [crate.def-macros :only [defpartial defelem]])
+  (:require [crate.core :as crate]
+            [oyster.tiles :as t]))
 
 (defpartial oyster-body []
   [:body
@@ -12,21 +13,21 @@
    [:div.hunger-container
     [:div#hunger.hunger-bar]]])
 
-(defpartial map-cell [r c x]
-  (case x
-    \~ [:span.water {:tile [r,c]} x]
-    \, [:span.grass {:tile [r,c]} x]
-    \. [:span.beach {:tile [r,c]} x]
-    [:span {:tile [r,c]} x]))
+(defn map-cell [r c x]
+  [:span {:class (name x) :tile [r c]} (:char (t/all-tiles x))])
 
-(defpartial map-row [r xs]
+(defn map-row [r xs]
   [:div.map-row
    (map-indexed (partial map-cell r) xs)])
 
-(defpartial draw-map [xss]
+(defn draw-map [xss]
   [:div#map
    (map-indexed map-row xss)])
 
+(defn status-bar []
+  [:div#status-bar])
+
 (defpartial main-game [m]
-  [:p
+  [:div
+   (status-bar)
    (draw-map m)])

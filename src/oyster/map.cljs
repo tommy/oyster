@@ -1,4 +1,5 @@
-(ns oyster.map)
+(ns oyster.map
+  (:require [oyster.tiles :as t]))
 
 ;; TODO: use seeded rng
 (defn rng
@@ -16,6 +17,11 @@
   "Transpose a list-of-lists matrix."
   [m]
   (apply map vector m))
+
+(defn to-vec
+  "Convert a list-of-lists to a vec-of-vecs."
+  [ls]
+  (vec (map vec ls)))
 
 (defn overwrite-after
   "Overwrite all elements of coll after the nth with e.
@@ -47,10 +53,11 @@
     cliff :cliff
     width :width
     height :height}]
-  (let [m (grid width height \,)]
+  (let [m (grid width height :grass)]
     (-> m
-        (draw-frontier cliff \.)
-        (draw-frontier coastline \~))))
+        (draw-frontier cliff :beach)
+        (draw-frontier coastline :water)
+        to-vec)))
     
 (defn empty-map
   "Generate random empty map from seed."
@@ -60,3 +67,9 @@
         coast (frontier seed w (- h 5))
         cliff (frontier seed w (- h 10))]
     (as-chars {:width w :height h :coastline coast :cliff cliff})))
+
+(defn tile-description
+  [m [r c]]
+  (:description
+    (t/all-tiles
+      (get-in m [r c] :nothing))))

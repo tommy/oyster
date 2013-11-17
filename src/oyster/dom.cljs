@@ -15,8 +15,11 @@
 (defn as-seq [nodes]
   (for [i (range (length nodes))] (item nodes i)))
 
+(defn replace-html! [dom content]
+  (set! (.-outerHTML dom) content))
+
 (defn set-html! [dom content]
-  (set! (. dom -innerHTML) content))
+  (set! (.-innerHTML dom) content))
 
 (defn set-style! [dom attr value]
   (goog.style.setStyle dom attr value))

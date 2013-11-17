@@ -12,7 +12,6 @@
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 
 (defn log [x] (.log js/console x))
-(log "Oyster Cloyster.")
 
 (defn seed [] 1234)
 
@@ -66,17 +65,28 @@
             (recur next))))
     c))
 
+(defn show-status
+  "Replace the contents of el with a description of the most recently
+  selected tile, read from the tiles channel."
+  [m el tiles]
+  (go (loop []
+        (when-let [t (<! tiles)]
+          (set-html! el (m/tile-description m t))
+          (recur)))))
+
 (defn game
   "Start the game."
   []
   (let [m (m/empty-map (seed))]
-    (set-html! (by-id :content) (.-outerHTML (oyster.view/main-game m)))
+    (set-html! (by-id :content) (.-innerHTML (oyster.view/main-game m)))
     (let [hover-chan (mult (hovers))
           cmds (tile-commands
                  (selected-tiles (tap-chan hover-chan))
                  (commands))]
       (show-selected (tap-chan hover-chan))
+      (show-status m (by-id :status-bar) (selected-tiles (tap-chan hover-chan)))
       (process-channel (comp log clj->js) cmds))))
 
 ;; begin the game when everything is loaded
 (set! (.-onload js/window) game)
+(log "Oyster Cloyster.")
