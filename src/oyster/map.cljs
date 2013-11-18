@@ -58,10 +58,10 @@
   "Generate random empty map from seed."
   [seed]
   (let [rng (if seed (r/rng seed) (r/rng))
-        w 70
+        w 80
         h 35
-        coast (frontier rng w (- h 5))
-        cliff (frontier rng w (- h 10))]
+        coast (frontier rng w (+ (- h 5) (r/rand-int rng -5 5)))
+        cliff (frontier rng w (+ (- h 10) (r/rand-int rng -5 5)))]
     (keyword-raster {:width w :height h :coastline coast :cliff cliff})))
 
 (defn tile-description
