@@ -42,9 +42,8 @@
         r (map (fn [mcol y] (overwrite-after c y mcol)) mt frontier)]
     (transpose r)))
 
-(defn as-chars
-  "Represent a map as nested array of ascii characters,
-  which can be displayed by the UI."
+(defn keyword-raster
+  "Represent a map as nested array of tile keywords."
   [{coastline :coastline
     cliff :cliff
     width :width
@@ -54,7 +53,7 @@
         (draw-frontier cliff :beach)
         (draw-frontier coastline :water)
         to-vec)))
-    
+
 (defn empty-map
   "Generate random empty map from seed."
   [seed]
@@ -63,7 +62,7 @@
         h 35
         coast (frontier rng w (- h 5))
         cliff (frontier rng w (- h 10))]
-    (as-chars {:width w :height h :coastline coast :cliff cliff})))
+    (keyword-raster {:width w :height h :coastline coast :cliff cliff})))
 
 (defn tile-description
   [m [r c]]
