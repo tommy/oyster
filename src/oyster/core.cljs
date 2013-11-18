@@ -88,4 +88,4 @@
 
 ;; begin the game when everything is loaded
 (set! (.-onload js/window) game)
-(log "Oyster Cloyster.")
+(log "Oyster Cloister.")
