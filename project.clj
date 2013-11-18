@@ -5,7 +5,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2030"]
                  [org.clojure/core.async "0.1.242.0-44b1e3-alpha"]
-                 [crate "0.2.4"]
+                 [prismatic/dommy "0.1.1"]
                  [ring "1.1.8"]
                  ]
 
