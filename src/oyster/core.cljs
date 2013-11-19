@@ -1,5 +1,5 @@
 (ns oyster.core
-  (:use [cljs.core.async :only [put! <!! <! chan timeout map< filter< remove< mult close!]])
+  (:use [cljs.core.async :only [chan timeout map< filter< remove< mult close!]])
   (:require [clojure.browser.event :as event]
             [goog.string.format :as gformat]
             [goog.string :as gstring]
@@ -8,12 +8,20 @@
                                         by-tag html update-html! update-height!]]
             [oyster.view]
             [oyster.async :as async :refer [listen every process-channel tap-chan]]
-            [oyster.map :as m])
+            [oyster.map :as m]
+            [oyster.intro :as intro]
+            [oyster.utilities :as util])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 
 (defn log [x] (.log js/console x))
 
-(defn seed [] (.random js/Math))
+(defn seed
+  "Get the seed from the query string, if any,
+  otherwise generate a random one."
+  []
+  (if-let [v (util/query-value :seed)]
+    v
+    (.random js/Math)))
 
 (defn hovers
   "A channel of tile <spans> which have been hovered over"
@@ -76,15 +84,18 @@
 (defn game
   "Start the game."
   []
-  (let [m (m/empty-map (seed))]
-    (set-html! (by-id :content) (.-innerHTML (oyster.view/main-game m)))
-    (let [hover-chan (mult (hovers))
-          cmds (tile-commands
-                 (selected-tiles (tap-chan hover-chan))
-                 (commands))]
-      (show-selected (tap-chan hover-chan))
-      (show-status m (by-id :status-bar) (selected-tiles (tap-chan hover-chan)))
-      (process-channel (comp log clj->js) cmds))))
+  (go
+    (if (util/query-value :intro)
+      (<! (intro/animate! (map intro/oyster (range 6 11 2)) 2)))
+    (let [m (m/empty-map (seed))]
+      (set-html! (by-id :content) (.-innerHTML (oyster.view/main-game m)))
+      (let [hover-chan (mult (hovers))
+            cmds (tile-commands
+                   (selected-tiles (tap-chan hover-chan))
+                   (commands))]
+        (show-selected (tap-chan hover-chan))
+        (show-status m (by-id :status-bar) (selected-tiles (tap-chan hover-chan)))
+        (process-channel (comp log clj->js) cmds)))))
 
 ;; begin the game when everything is loaded
 (set! (.-onload js/window) game)
