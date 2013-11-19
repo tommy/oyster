@@ -1,19 +1,20 @@
 (ns oyster.view
   (:use-macros [dommy.macros :only [node deftemplate]])
   (:require [dommy.core :as dommy]
+            [dommy.attrs :as attrs]
             [oyster.tiles :as t]
             [oyster.intro :as intro]))
 
-
 (defn map-cell [r c x]
-  [:span {:class (name x) :tile [r c]} (:char (t/all-tiles x))])
+  (let [tile (t/all-tiles x)]
+    [:span {:style (attrs/style-str (:style tile)) :tile [r c]}
+     (:char tile)]))
 
 (defn map-row [r xs]
   [:div.map-row
    (map-indexed (partial map-cell r) xs)])
 
 (defn draw-map [xss]
-  
   [:div#map
    (map-indexed map-row xss)])
 

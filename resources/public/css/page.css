@@ -16,18 +16,6 @@
   user-select: none;
 }
 
-#map .grass {
-  color: green;
-}
-
-#map .water {
-  color: blue;
-}
-
-#map .beach {
-  color: orange;
-}
-
 #map .selected {
   background: gray;
   color: white;
