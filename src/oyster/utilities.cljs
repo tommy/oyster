@@ -5,9 +5,7 @@
 ;; println calls should log to the JS console.
 (set! *print-fn* log)
 
-(defn window-href
-  []
-  (.-href (.-location js/window)))
+(defn window-href [] (-> js/window .-location .-href))
 
 (defn extract-value
   [coll]

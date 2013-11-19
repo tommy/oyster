@@ -6,7 +6,7 @@
   
 ;; DOM utilities
   
-(defn length [nodes] (. nodes -length))
+(defn length [nodes] (.-length nodes))
 
 (defn item [nodes n] (.item nodes n))
 

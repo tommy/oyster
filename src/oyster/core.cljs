@@ -34,8 +34,8 @@
 (defn hovers
   "A channel of tile <spans> which have been hovered over"
   []
-  (->> (listen (by-id :map) :mouseover)
-       (map< #(.-target %))))
+  (map< #(.-target %)
+    (listen (by-id :map) :mouseover)))
 
 (defn show-selected
   "Watch a hover channel, keeping the .selected class on the current hovered element"
