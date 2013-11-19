@@ -7,6 +7,8 @@
 
 ;; matrix/seq functions
 
+(def to-vec (partial mapv vec))
+
 (defn dim
   "The dimension of matrix m. Returned as
   [number-of-rows number-of-cols]."
@@ -108,10 +110,11 @@
   [seed]
   (let [m (random-keyword-map seed)
         f (fn [[r c] type] (->Tile [r c] type (dommy/node (view/map-cell r c type))))]
-    (mmap
-      f
-      (matrix-indices)
-      m)))
+    (to-vec
+      (mmap
+        f
+        (matrix-indices)
+        m))))
 
 ;; map utilties
 
@@ -119,4 +122,5 @@
   [m [r c]]
   (:description
     (t/all-tiles
-      (get-in m [r c] :nothing))))
+      (:type
+        (get-in m [r c] :nothing)))))

@@ -14,6 +14,7 @@
                                             tap-chan]]
             [oyster.map :as m]
             [oyster.intro :as intro]
+            [oyster.commands :as c]
             [oyster.utilities :as util :refer [log]])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 
@@ -60,7 +61,9 @@
   (->> (listen js/document :keypress)
        (map< #(.-charCode %))
        (map< #(.fromCharCode js/String %))
-       (map< keyword)))
+       (map< keyword)
+       (filter< (partial contains? c/all-commands))
+       (map< c/all-commands)))
 
 (defn tile-commands
   "Combine a channel of selected-tiles and a channel of keyboard commands
@@ -74,6 +77,15 @@
             (recur next)
             (close! c))))
     c))
+
+(defn execute-player-commands
+  [m cmds]
+  (letfn [(execute [[cmd idx]]
+            (if-let [t (get-in m idx)]
+              (do
+                  (log (str (:description cmd) " on " (:type t)))
+                  ((:action cmd) t))))]
+    (process-channel execute cmds)))
 
 (defn show-status
   "Replace the contents of el with a description of the most recently
@@ -96,7 +108,7 @@
                    (commands))]
         (show-selected (tap-chan hover-chan))
         (show-status m (by-id :status-bar) (selected-tiles (tap-chan hover-chan)))
-        (process-channel (comp log clj->js) cmds)))))
+        (execute-player-commands m cmds)))))
 
 ;; begin the game when everything is loaded
 (set! (.-onload js/window) game)
