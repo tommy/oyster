@@ -12,19 +12,16 @@
 (defn transpose
   "Transpose a list-of-lists matrix."
   [m]
-  (apply map vector m))
-
-(defn to-vec
-  "Convert a list-of-lists to a vec-of-vecs."
-  [ls]
-  (vec (map vec ls)))
+  (apply mapv vector m))
 
 (defn overwrite-after
   "Overwrite all elements of coll after the nth with e.
   (overwrite-after :e 3 [0 1 2 3 4 5 6])
   ;=> [0 1 2 :e :e :e :e]"
   [e n coll]
-  (vec (concat (take n coll) (repeat (- (count coll) n) e))))
+  (vec (concat
+         (take n coll)
+         (repeat (- (count coll) n) e))))
 
 (defn frontier
   "Generate random frontier. Returns y-distances from top
@@ -39,7 +36,7 @@
   "Draw frontier in ascii map."
   [m frontier c]
   (let [mt (transpose m)
-        r (map (fn [mcol y] (overwrite-after c y mcol)) mt frontier)]
+        r (mapv (fn [mcol y] (overwrite-after c y mcol)) mt frontier)]
     (transpose r)))
 
 (defn keyword-raster
@@ -51,8 +48,7 @@
   (let [m (grid width height :grass)]
     (-> m
         (draw-frontier cliff :beach)
-        (draw-frontier coastline :water)
-        to-vec)))
+        (draw-frontier coastline :water))))
 
 (defn empty-map
   "Generate random empty map from seed."

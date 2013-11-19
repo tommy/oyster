@@ -3,17 +3,19 @@
   (:require [clojure.browser.event :as event]
             [goog.string.format :as gformat]
             [goog.string :as gstring]
-            [oyster.dom :as dom :refer [length item as-seq
-                                        set-html! set-style! by-id by-class
-                                        by-tag html update-html! update-height!]]
+            [dommy.attrs]
+            [dommy.core]
+            [oyster.dom :as dom :refer [by-id]]
             [oyster.view]
-            [oyster.async :as async :refer [listen every process-channel tap-chan]]
+            [oyster.async :as async :refer [listen
+                                            every
+                                            process-channel
+                                            process-with-prev
+                                            tap-chan]]
             [oyster.map :as m]
             [oyster.intro :as intro]
-            [oyster.utilities :as util])
+            [oyster.utilities :as util :refer [log]])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
-
-(defn log [x] (.log js/console x))
 
 (defn seed
   "Get the seed from the query string, if any,
@@ -23,6 +25,12 @@
     v
     (.random js/Math)))
 
+(def parse-coords
+  (comp
+    (partial map js/parseInt)
+    next
+    (partial re-matches #"\[(\d+) (\d+)\]")))
+
 (defn hovers
   "A channel of tile <spans> which have been hovered over"
   []
@@ -30,19 +38,12 @@
        (map< #(.-target %))))
 
 (defn show-selected
-  [hover-chan]
   "Watch a hover channel, keeping the .selected class on the current hovered element"
-  (go
-    (loop [last nil]
-      (when-let [next (<! hover-chan)]
-        (dom/add-class next "selected")
-        (if last
-          (dom/remove-class last "selected"))
-        (recur next)))))
-
-(defn parse-coords
-  [s]
-  (map js/parseInt (next (re-matches #"\[(\d+) (\d+)\]" s))))
+  [hover-chan]
+  (let [change-class (fn [prev next]
+                       (dommy.attrs/add-class! next :selected)
+                       (if prev (dommy.attrs/remove-class! prev :selected)))]
+    (process-with-prev change-class hover-chan)))
 
 (defn selected-tiles
   "A channel populated with selected map tiles.
@@ -78,7 +79,7 @@
   "Replace the contents of el with a description of the most recently
   selected tile, read from the tiles channel."
   [m el tiles]
-  (let [f (fn [t] (set-html! el (m/tile-description m t)))]
+  (let [f (fn [t] (dommy.core/set-html! el (m/tile-description m t)))]
     (process-channel f tiles)))
 
 (defn game
@@ -88,7 +89,7 @@
     (if (util/query-value :intro)
       (<! (intro/animate! (map intro/oyster (range 6 11 2)) 2)))
     (let [m (m/empty-map (seed))]
-      (set-html! (by-id :content) (.-innerHTML (oyster.view/main-game m)))
+      (dommy.core/replace-contents! (by-id :content) (oyster.view/main-game m))
       (let [hover-chan (mult (hovers))
             cmds (tile-commands
                    (selected-tiles (tap-chan hover-chan))

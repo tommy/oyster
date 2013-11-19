@@ -1,5 +1,10 @@
 (ns oyster.utilities)
 
+(defn log [x] (.log js/console x))
+
+;; println calls should log to the JS console.
+(set! *print-fn* log)
+
 (defn window-href
   []
   (.-href (.-location js/window)))

@@ -28,6 +28,18 @@
              (recur))
     rc))
 
+(defn tap-chan
+  "Create new channel and register it as a tap on a mult(iple) channel. Return the new tap."
+  ([mult]
+   (tap-chan mult nil))
+  ([mult buf-or-n]
+   (let [c (chan buf-or-n)]
+     (tap mult c)
+     c)))
+
+
+;; consuming channels
+
 (defn process-channel
   "Process all messages on channel c with function f,
   until the channel is closed."
@@ -37,17 +49,18 @@
              (f x)
              (recur))))
 
+(defn process-with-prev
+  "Process a channel with a function f, which is called as (f prev next),
+  where prev is the previous value pulled from the channel (initially nil)."
+  [f c]
+  (go-loop [prev nil]
+           (when-let [next (<! c)]
+             (f prev next)
+             (recur next))))
+
 (defn bind
   "Register f as an event handler for events on el."
   [el type f]
   (let [c (listen el type)]
     (process-channel f c)))
 
-(defn tap-chan
-  "Create new channel and register it as a tap on a mult(iple) channel. Return the new tap."
-  ([mult]
-   (tap-chan mult nil))
-  ([mult buf-or-n]
-   (let [c (chan buf-or-n)]
-     (tap mult c)
-     c)))
