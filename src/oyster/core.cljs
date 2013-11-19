@@ -88,7 +88,7 @@
   (go
     (if (util/query-value :intro)
       (<! (intro/animate! (map intro/oyster (range 6 11 2)) 2)))
-    (let [m (m/empty-map (seed))]
+    (let [m (m/random-tile-map (seed))]
       (dommy.core/replace-contents! (by-id :content) (oyster.view/main-game m))
       (let [hover-chan (mult (hovers))
             cmds (tile-commands

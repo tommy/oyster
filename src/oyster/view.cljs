@@ -5,23 +5,21 @@
             [oyster.tiles :as t]
             [oyster.intro :as intro]))
 
+(defn status-bar []
+  [:div#status-bar])
+
 (defn map-cell [r c x]
   (let [tile (t/all-tiles x)]
     [:span {:style (attrs/style-str (:style tile)) :tile [r c]}
      (:char tile)]))
 
-(defn map-row [r xs]
+(defn map-row [ts]
   [:div.map-row
-   (map-indexed (partial map-cell r) xs)])
+   (map :el ts)])
 
-(defn draw-map [xss]
+(defn draw-map [tss]
   [:div#map
-   (map-indexed map-row xss)])
-
-(defn status-bar []
-  [:div#status-bar])
-
-(declare oyster)
+   (map map-row tss)])
 
 (deftemplate main-game [m]
   [:div
