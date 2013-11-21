@@ -104,17 +104,16 @@
         cliff (frontier rng w (+ (- h 10) (r/rand-int rng -5 5)))]
     (keyword-raster {:width w :height h :coastline coast :cliff cliff})))
 
-(defrecord Tile [index type el])
+(defrecord Tile [index type binding-chan])
 
 (defn random-tile-map
   [seed]
-  (let [m (random-keyword-map seed)
-        f (fn [[r c] type] (->Tile [r c] type (dommy/node (view/map-cell r c type))))]
-    (to-vec
-      (mmap
-        f
-        (matrix-indices)
-        m))))
+  (let [mkeys (random-keyword-map seed)
+        mels (mmap view/map-cell (matrix-indices) mkeys)
+        mchans (mmap view/binding-chan mels)
+        mtiles (mmap ->Tile (matrix-indices) mkeys mchans)]
+    {:tiles (to-vec mtiles)
+     :el (view/draw-map mels)}))
 
 ;; map utilties
 

@@ -83,7 +83,7 @@
   (letfn [(execute [[cmd idx]]
             (if-let [t (get-in m idx)]
               (do
-                  (log (str (:description cmd) " on " (:type t)))
+                  (log (str (:description cmd) " on " (name (:type t))))
                   ((:action cmd) t))))]
     (process-channel execute cmds)))
 
@@ -100,15 +100,15 @@
   (go
     (if (util/query-value :intro)
       (<! (intro/animate! (map intro/oyster (range 6 11 2)) 2)))
-    (let [m (m/random-tile-map (seed))]
-      (dommy.core/replace-contents! (by-id :content) (oyster.view/main-game m))
+    (let [{map-el :el tiles :tiles} (m/random-tile-map (seed))]
+      (dommy.core/replace-contents! (by-id :content) (oyster.view/main-game map-el))
       (let [hover-chan (mult (hovers))
             cmds (tile-commands
                    (selected-tiles (tap-chan hover-chan))
                    (commands))]
         (show-selected (tap-chan hover-chan))
-        (show-status m (by-id :status-bar) (selected-tiles (tap-chan hover-chan)))
-        (execute-player-commands m cmds)))))
+        (show-status tiles (by-id :status-bar) (selected-tiles (tap-chan hover-chan)))
+        (execute-player-commands tiles cmds)))))
 
 ;; begin the game when everything is loaded
 (set! (.-onload js/window) game)
