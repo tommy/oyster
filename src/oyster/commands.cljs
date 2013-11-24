@@ -5,5 +5,10 @@
 
 (def all-commands
   {:t {:name :till
-       :description "Till the soil."
-       :action (fn [t] (if (= :grass @(:type t)) (m/change-tile t :tilled-soil)))}})
+       :description "Tilled the soil."
+       :usable-on #{:grass}
+       :action (fn [t] (m/change-tile t :tilled-soil))}
+   :p {:name :plant
+       :description "Planted a radish."
+       :usable-on #{:tilled-soil}
+       :action (fn [t] (m/change-tile t :radish-seed))}})

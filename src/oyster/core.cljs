@@ -79,12 +79,14 @@
     c))
 
 (defn execute-player-commands
-  [m cmds]
+  [m cmds status-el]
   (letfn [(execute [[cmd idx]]
             (if-let [t (get-in m idx)]
               (do
                   (log (str (:description cmd) " on " (name @(:type t))))
-                  ((:action cmd) t))))]
+                  (when ((:usable-on cmd) @(:type t))
+                    ((:action cmd) t)
+                    (dommy.core/set-html! status-el (:description cmd))))))]
     (process-channel execute cmds)))
 
 (defn show-status
@@ -108,7 +110,7 @@
                    (commands))]
         (show-selected (tap-chan hover-chan))
         (show-status tiles (by-id :status-bar) (selected-tiles (tap-chan hover-chan)))
-        (execute-player-commands tiles cmds)))))
+        (execute-player-commands tiles cmds (by-id :status-bar))))))
 
 ;; begin the game when everything is loaded
 (set! (.-onload js/window) game)

@@ -13,6 +13,10 @@
                  :style {:color "brown"}
                  :description "Tilled soil."}
 
+   :radish-seed {:char \u2248
+                 :style {:color "brown"}
+                 :description "A radish seed is planted here."}
+
    :beach {:char \.
            :style {:color "orange"}
            :description "A sandy beach."}
