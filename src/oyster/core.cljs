@@ -83,7 +83,7 @@
   (letfn [(execute [[cmd idx]]
             (if-let [t (get-in m idx)]
               (do
-                  (log (str (:description cmd) " on " (name (:type t))))
+                  (log (str (:description cmd) " on " (name @(:type t))))
                   ((:action cmd) t))))]
     (process-channel execute cmds)))
 

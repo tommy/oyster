@@ -3,7 +3,8 @@
             [oyster.random :as r]
             [oyster.view :as view]
             [oyster.utilities :as util :refer [log]])
-  (:require-macros [dommy.macros :as dommy]))
+  (:require-macros [dommy.macros :as dommy]
+                   [cljs.core.async.macros :refer [go]]))
 
 ;; matrix/seq functions
 
@@ -111,7 +112,7 @@
   (let [mkeys (random-keyword-map seed)
         mels (mmap view/map-cell (matrix-indices) mkeys)
         mchans (mmap view/binding-chan mels)
-        mtiles (mmap ->Tile (matrix-indices) mkeys mchans)]
+        mtiles (mmap ->Tile (matrix-indices) (mmap atom mkeys) mchans)]
     {:tiles (to-vec mtiles)
      :el (view/draw-map mels)}))
 
@@ -119,7 +120,15 @@
 
 (defn tile-description
   [m [r c]]
-  (:description
-    (t/all-tiles
-      (:type
-        (get-in m [r c] :nothing)))))
+  (-> m
+      (get-in [r c] :nothing)
+      :type
+      deref
+      t/all-tiles
+      :description))
+
+(defn change-tile
+  [t newtype]
+  (go
+    (reset! (:type t) newtype)
+    (>! (:binding-chan t) newtype)))
