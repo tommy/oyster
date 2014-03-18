@@ -28,6 +28,15 @@
              (recur))
     rc))
 
+(defn after
+  "Execute f after the specified timeout. Puts the return
+  value of f onto the returned channel, then closes that channel."
+  [interval f]
+  (let [rc (chan)]
+    (go (<! (timeout interval))
+        (>! rc (f))
+        (close! rc))))
+
 (defn tap-chan
   "Create new channel and register it as a tap on a mult(iple) channel. Return the new tap."
   ([mult]
